@@ -2,7 +2,6 @@ package com.tw.finseta.payment.api;
 
 import com.tw.finseta.payment.model.Payment;
 import com.tw.finseta.payment.service.PaymentService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,7 +63,7 @@ public class PaymentController implements PaymentsApi {
      * @return ResponseEntity containing the created payment object and HTTP status 201 (Created)
      */
     @Override
-    public ResponseEntity<Payment> paymentsPost(@Valid Payment payment) {
+    public ResponseEntity<Payment> paymentsPost(Payment payment) {
         logger.info("Received createPayment request: {}", payment);
         Payment savedPayment = paymentService.savePayment(payment);
         return new ResponseEntity<>(savedPayment, HttpStatus.CREATED);

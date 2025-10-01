@@ -6,7 +6,6 @@ import com.tw.finseta.payment.model.Payment;
 import com.tw.finseta.payment.repository.AccountRepository;
 import com.tw.finseta.payment.repository.PaymentRepository;
 import com.tw.finseta.payment.util.PaymentUtil;
-import com.tw.finseta.payment.util.PaymentValidation;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,8 +54,6 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     public Payment savePayment(Payment payment) {
-        PaymentValidation.validate(payment);
-
         PaymentBo paymentBo = PaymentUtil.paymentToPaymentBo.apply(payment);
 
         // Proceed with saving paymentBo if account already exists fetch existing one - accountNumber, sortCode unique

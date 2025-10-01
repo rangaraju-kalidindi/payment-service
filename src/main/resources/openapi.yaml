@@ -98,6 +98,8 @@ components:
           example: GBP
         amount:
           type: number
+          minimum: 0
+          description: Amount must not be negative
           example: 10.00
         counterparty:
           $ref: '#/components/schemas/Account'

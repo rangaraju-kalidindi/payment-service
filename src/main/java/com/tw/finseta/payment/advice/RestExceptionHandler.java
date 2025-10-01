@@ -8,11 +8,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * REST controller advice that handles validation and deserialization errors for the payment API.
@@ -46,8 +49,15 @@ public class RestExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<BadRequest> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         logger.error("MethodArgumentNotValidException:", ex);
+
+        List<Error> liErrors = ex.getBindingResult().getAllErrors().stream().flatMap(error -> {
+            String fieldName = ((error instanceof  FieldError) ? ((FieldError)error).getField() : error.getObjectName());
+            String errMsg = error.getDefaultMessage();
+            return  Stream.of(new Error().message(fieldName + " : " + errMsg));
+        }).collect(Collectors.toList());
+
         BadRequest badRequest = new BadRequest();
-        badRequest.setErrors(List.of(new Error().message(ex.getMessage())));
+        badRequest.setErrors(liErrors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(badRequest);
     }
 
