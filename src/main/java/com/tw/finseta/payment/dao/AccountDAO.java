@@ -1,4 +1,4 @@
-package com.tw.finseta.payment.bo;
+package com.tw.finseta.payment.dao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -25,7 +25,7 @@ import lombok.EqualsAndHashCode;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class AccountBo {
+public class AccountDAO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

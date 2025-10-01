@@ -1,4 +1,4 @@
-package com.tw.finseta.payment.bo;
+package com.tw.finseta.payment.dao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -28,7 +28,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class PaymentBo {
+public class PaymentDAO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +37,7 @@ public class PaymentBo {
     @ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "accounts_id")
     @JsonProperty("counterparty")
-    private AccountBo counterparty;
+    private AccountDAO counterparty;
 
     @JsonProperty("amount")
     private BigDecimal amount;
@@ -45,7 +45,7 @@ public class PaymentBo {
     @JsonProperty("currency")
     private String currency;
 
-    public PaymentBo(String currency, BigDecimal amount, AccountBo counterparty) {
+    public PaymentDAO(String currency, BigDecimal amount, AccountDAO counterparty) {
         this.currency = currency;
         this.amount = amount;
         this.counterparty = counterparty;

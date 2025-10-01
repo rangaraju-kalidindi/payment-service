@@ -1,8 +1,8 @@
 package com.tw.finseta.payment.util;
 
-import com.tw.finseta.payment.bo.AccountBo;
-import com.tw.finseta.payment.bo.AccountType;
-import com.tw.finseta.payment.bo.PaymentBo;
+import com.tw.finseta.payment.dao.AccountDAO;
+import com.tw.finseta.payment.dao.AccountType;
+import com.tw.finseta.payment.dao.PaymentDAO;
 import com.tw.finseta.payment.model.Account;
 import com.tw.finseta.payment.model.Payment;
 import org.springframework.util.ObjectUtils;
@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
  * This class provides reusable, null-safe Java 8 {@link java.util.function.Function} instances
  * to convert back and forth between:
  * <ul>
- *     <li>{@link Account} (API model) and {@link AccountBo} (business entity)</li>
- *     <li>{@link Payment} (API model) and {@link PaymentBo} (business entity)</li>
- *     <li>Also supports converting lists of PaymentBo to Payment</li>
+ *     <li>{@link Account} (API model) and {@link AccountDAO} (business entity)</li>
+ *     <li>{@link Payment} (API model) and {@link PaymentDAO} (business entity)</li>
+ *     <li>Also supports converting lists of PaymentDAO to Payment</li>
  * </ul>
  *
  * Conversion functions use Spring's {@link ObjectUtils#isEmpty(Object)} for null and emptiness checks.
@@ -29,9 +29,9 @@ import java.util.stream.Collectors;
  *
  * Example usage:
  * <pre>
- *     AccountBo entity = PaymentUtil.accountToAccountBo.apply(apiAccount);
- *     Payment apiModel = PaymentUtil.paymentBoToPayment.apply(paymentEntity);
- *     List&lt;Payment&gt; apiList = PaymentUtil.paymentBoListToPaymentList(paymentBoList);
+ *     AccountDAO entity = PaymentUtil.accountToAccountDAO.apply(apiAccount);
+ *     Payment apiModel = PaymentUtil.paymentDAOToPayment.apply(paymentEntity);
+ *     List&lt;Payment&gt; apiList = PaymentUtil.paymentDAOListToPaymentList(paymentDAOList);
  * </pre>
  *
  * Author: Ranga Raju
@@ -39,81 +39,81 @@ import java.util.stream.Collectors;
 public class PaymentUtil {
 
     /**
-     * Function to convert {@link Account} API model to {@link AccountBo} entity.
+     * Function to convert {@link Account} API model to {@link AccountDAO} entity.
      */
-    public static final Function<Account, AccountBo> accountToAccountBo = account -> {
+    public static final Function<Account, AccountDAO> accountToAccountDAO = account -> {
         if (ObjectUtils.isEmpty(account)) {
             return null;
         }
-        AccountBo accountBo = new AccountBo();
+        AccountDAO accountDAO = new AccountDAO();
         if (!ObjectUtils.isEmpty(account.getType())) {
-            accountBo.setType(AccountType.valueOf(account.getType().getValue()));
+            accountDAO.setType(AccountType.valueOf(account.getType().getValue()));
         } else {
-            accountBo.setType(null);
+            accountDAO.setType(null);
         }
-        accountBo.setAccountNumber(account.getAccountNumber());
-        accountBo.setSortCode(account.getSortCode());
-        return accountBo;
+        accountDAO.setAccountNumber(account.getAccountNumber());
+        accountDAO.setSortCode(account.getSortCode());
+        return accountDAO;
     };
 
     /**
-     * Function to convert {@link AccountBo} entity to {@link Account} API model.
+     * Function to convert {@link AccountDAO} entity to {@link Account} API model.
      */
-    public static final Function<AccountBo, Account> accountBoToAccount = accountBo -> {
-        if (ObjectUtils.isEmpty(accountBo)) {
+    public static final Function<AccountDAO, Account> accountDAOToAccount = accountDAO -> {
+        if (ObjectUtils.isEmpty(accountDAO)) {
             return null;
         }
         Account account = new Account();
-        if (!ObjectUtils.isEmpty(accountBo.getType())) {
-            account.setType(Account.TypeEnum.fromValue(accountBo.getType().name()));
+        if (!ObjectUtils.isEmpty(accountDAO.getType())) {
+            account.setType(Account.TypeEnum.fromValue(accountDAO.getType().name()));
         } else {
             account.setType(null);
         }
-        account.setAccountNumber(accountBo.getAccountNumber());
-        account.setSortCode(accountBo.getSortCode());
+        account.setAccountNumber(accountDAO.getAccountNumber());
+        account.setSortCode(accountDAO.getSortCode());
         return account;
     };
 
     /**
-     * Function to convert {@link Payment} API model to {@link PaymentBo} entity.
+     * Function to convert {@link Payment} API model to {@link PaymentDAO} entity.
      */
-    public static final Function<Payment, PaymentBo> paymentToPaymentBo = payment -> {
+    public static final Function<Payment, PaymentDAO> paymentToPaymentDAO = payment -> {
         if (ObjectUtils.isEmpty(payment)) {
             return null;
         }
-        PaymentBo paymentBo = new PaymentBo();
-        paymentBo.setCurrency(payment.getCurrency());
-        paymentBo.setAmount(payment.getAmount());
-        paymentBo.setCounterparty(accountToAccountBo.apply(payment.getCounterparty()));
-        return paymentBo;
+        PaymentDAO paymentDAO = new PaymentDAO();
+        paymentDAO.setCurrency(payment.getCurrency());
+        paymentDAO.setAmount(payment.getAmount());
+        paymentDAO.setCounterparty(accountToAccountDAO.apply(payment.getCounterparty()));
+        return paymentDAO;
     };
 
     /**
-     * Function to convert {@link PaymentBo} entity to {@link Payment} API model.
+     * Function to convert {@link PaymentDAO} entity to {@link Payment} API model.
      */
-    public static final Function<PaymentBo, Payment> paymentBoToPayment = paymentBo -> {
-        if (ObjectUtils.isEmpty(paymentBo)) {
+    public static final Function<PaymentDAO, Payment> paymentDAOToPayment = paymentDAO -> {
+        if (ObjectUtils.isEmpty(paymentDAO)) {
             return null;
         }
         Payment payment = new Payment();
-        payment.setCurrency(paymentBo.getCurrency());
-        payment.setAmount(paymentBo.getAmount());
-        payment.setCounterparty(accountBoToAccount.apply(paymentBo.getCounterparty()));
+        payment.setCurrency(paymentDAO.getCurrency());
+        payment.setAmount(paymentDAO.getAmount());
+        payment.setCounterparty(accountDAOToAccount.apply(paymentDAO.getCounterparty()));
         return payment;
     };
 
     /**
-     * Converts a list of {@link PaymentBo} entities to a list of {@link Payment} API models.
+     * Converts a list of {@link PaymentDAO} entities to a list of {@link Payment} API models.
      *
-     * @param paymentBoList the list of PaymentBo entities
+     * @param paymentDAOList the list of PaymentDAO entities
      * @return the corresponding list of Payment API models; empty list if input is empty or null
      */
-    public static List<Payment> paymentBoListToPaymentList(List<PaymentBo> paymentBoList) {
-        if (paymentBoList == null || paymentBoList.isEmpty()) {
+    public static List<Payment> paymentDAOListToPaymentList(List<PaymentDAO> paymentDAOList) {
+        if (paymentDAOList == null || paymentDAOList.isEmpty()) {
             return java.util.Collections.emptyList();
         }
-        return paymentBoList.stream()
-                .map(paymentBoToPayment)
+        return paymentDAOList.stream()
+                .map(paymentDAOToPayment)
                 .collect(Collectors.toList());
     }
 }

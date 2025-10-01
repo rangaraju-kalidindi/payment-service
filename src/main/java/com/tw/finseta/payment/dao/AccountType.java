@@ -1,4 +1,4 @@
-package com.tw.finseta.payment.bo;
+package com.tw.finseta.payment.dao;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

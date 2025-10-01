@@ -1,7 +1,7 @@
 package com.tw.finseta.payment.service;
 
-import com.tw.finseta.payment.bo.AccountBo;
-import com.tw.finseta.payment.bo.PaymentBo;
+import com.tw.finseta.payment.dao.AccountDAO;
+import com.tw.finseta.payment.dao.PaymentDAO;
 import com.tw.finseta.payment.model.Payment;
 import com.tw.finseta.payment.repository.AccountRepository;
 import com.tw.finseta.payment.repository.PaymentRepository;
@@ -54,20 +54,20 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     public Payment savePayment(Payment payment) {
-        PaymentBo paymentBo = PaymentUtil.paymentToPaymentBo.apply(payment);
+        PaymentDAO paymentDAO = PaymentUtil.paymentToPaymentDAO.apply(payment);
 
-        // Proceed with saving paymentBo if account already exists fetch existing one - accountNumber, sortCode unique
-        if (paymentBo.getCounterparty() != null) {
-            AccountBo incomingAccount = paymentBo.getCounterparty();
+        // Proceed with saving paymentDAO if account already exists fetch existing one - accountNumber, sortCode unique
+        if (paymentDAO.getCounterparty() != null) {
+            AccountDAO incomingAccount = paymentDAO.getCounterparty();
             // Lookup existing account by accountNumber and sortCode
-            Optional<AccountBo> existingAccountOpt = accountRepository.findByAccountNumberAndSortCode(
+            Optional<AccountDAO> existingAccountOpt = accountRepository.findByAccountNumberAndSortCode(
                     incomingAccount.getAccountNumber(), incomingAccount.getSortCode());
             // Use existing account to avoid duplicates
-            existingAccountOpt.ifPresent(paymentBo::setCounterparty);
+            existingAccountOpt.ifPresent(paymentDAO::setCounterparty);
         }
 
-        logger.info("Saving paymentBo: {}", paymentBo);
-        return PaymentUtil.paymentBoToPayment.apply(paymentRepository.save(paymentBo));
+        logger.info("Saving paymentDAO: {}", paymentDAO);
+        return PaymentUtil.paymentDAOToPayment.apply(paymentRepository.save(paymentDAO));
     }
 
     /**
@@ -81,9 +81,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public List<Payment> getPaymentsByFilters(List<String> currencies, BigDecimal minAmount) {
         // If currencies list is empty, pass null to query for no filtering on currencies
-        List<PaymentBo> liPaymentBo = paymentRepository.findByCurrencyInAndAmountGreaterThanEqual(
+        List<PaymentDAO> liPaymentDAO = paymentRepository.findByCurrencyInAndAmountGreaterThanEqual(
                 (currencies == null || currencies.isEmpty()) ? null : currencies,
                 minAmount);
-        return PaymentUtil.paymentBoListToPaymentList(liPaymentBo);
+        return PaymentUtil.paymentDAOListToPaymentList(liPaymentDAO);
     }
 }
