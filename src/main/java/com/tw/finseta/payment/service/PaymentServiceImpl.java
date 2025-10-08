@@ -5,7 +5,7 @@ import com.tw.finseta.payment.dao.PaymentDAO;
 import com.tw.finseta.payment.model.Payment;
 import com.tw.finseta.payment.repository.AccountRepository;
 import com.tw.finseta.payment.repository.PaymentRepository;
-import com.tw.finseta.payment.util.PaymentUtil;
+import com.tw.finseta.payment.util.PaymentMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +31,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private PaymentRepository paymentRepository;
     private AccountRepository accountRepository;
+    private PaymentMapper paymentMapper;
 
     /**
      * Constructs a PaymentServiceImpl with the required repositories.
@@ -39,9 +40,11 @@ public class PaymentServiceImpl implements PaymentService {
      * @param accountRepository the account repository to be used
      */
     @Autowired
-    public PaymentServiceImpl(PaymentRepository paymentRepository, AccountRepository accountRepository) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository,
+                              AccountRepository accountRepository, PaymentMapper paymentMapper) {
         this.paymentRepository = paymentRepository;
         this.accountRepository = accountRepository;
+        this.paymentMapper = paymentMapper;
     }
 
     /**
@@ -54,7 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     public Payment savePayment(Payment payment) {
-        PaymentDAO paymentDAO = PaymentUtil.paymentToPaymentDAO.apply(payment);
+        PaymentDAO paymentDAO = paymentMapper.toDAO(payment);
 
         // Proceed with saving paymentDAO if account already exists fetch existing one - accountNumber, sortCode unique
         if (paymentDAO.getCounterparty() != null) {
@@ -67,7 +70,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         logger.info("Saving paymentDAO: {}", paymentDAO);
-        return PaymentUtil.paymentDAOToPayment.apply(paymentRepository.save(paymentDAO));
+        return paymentMapper.toModel(paymentRepository.save(paymentDAO));
     }
 
     /**
@@ -84,6 +87,6 @@ public class PaymentServiceImpl implements PaymentService {
         List<PaymentDAO> liPaymentDAO = paymentRepository.findByCurrencyInAndAmountGreaterThanEqual(
                 (currencies == null || currencies.isEmpty()) ? null : currencies,
                 minAmount);
-        return PaymentUtil.paymentDAOListToPaymentList(liPaymentDAO);
+        return paymentMapper.toModelList(liPaymentDAO);
     }
 }

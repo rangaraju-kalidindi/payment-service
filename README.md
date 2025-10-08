@@ -4,7 +4,7 @@ This is a Spring Boot based payment service application with REST APIs to manage
 ## Features
 - Create and validate payments with associated account details
 - Query payments with filters on currency and minimum amount
-- Custom validation exceptions and error handling
+- Validation exceptions and error handling
 - JPA entities and repositories for persistence
 - Unit tests covering controller endpoints
 
@@ -24,15 +24,15 @@ This is a Spring Boot based payment service application with REST APIs to manage
 
 ## Running the application
 
-Run the jar with the following command:
+Run the jar with the following command or use mvn spring-boot:run to run the application
 java -jar target/payment-service-1.0.0-SNAPSHOT.jar
 
 The application will start an embedded server (default port 8080), exposing REST endpoints for payments.
 
 ## API endpoints
 
-- `POST /http://<host>:<port>/api/v1/payments` - Create a new payment
-- Ex POST Request: http://localhost:8080/api/v1/payments
+- `POST /http://<host>:<port>/payments` - Create a new payment
+- Ex POST Request: http://localhost:8080/payments
 - POST Request Body Ex:
   {
     "currency": "INR",
@@ -45,18 +45,17 @@ The application will start an embedded server (default port 8080), exposing REST
    }
 
 - Following are the GET APIs Query payments with optional filters (`currencies`, `minAmount`)
-- Ex GET Request: http://localhost:8080/api/v1/payments
-- `GET /http://<host>:<port>/api/v1/payments` - Query all payments
-- `GET /http://<host>:<port>/api/v1/payments?currencies=USD, GBP` - Query payments with currencies filter 
-- `GET /http://<host>:<port>/api/v1/payments?payments?minAmount=101` - Query payments with minAmount filter
-- `GET /http://<host>:<port>/api/v1/payments?currencies=GBP&minAmount=100` - Query payments with currencies & minAmount filter
+- Ex GET Request: http://localhost:8080/payments
+- `GET /http://<host>:<port>/payments` - Query all payments
+- `GET /http://<host>:<port>/payments?currencies=USD, GBP` - Query payments with currencies filter 
+- `GET /http://<host>:<port>/payments?payments?minAmount=101` - Query payments with minAmount filter
+- `GET /http://<host>:<port>/payments?currencies=GBP&minAmount=100` - Query payments with currencies & minAmount filter
 
 ## H2 DB 
 - Once the service is up and running connect with the H2 DB using the following 
-- URL: http://localhost:8080/api/v1/h2-console
+- URL: http://localhost:8080/h2-console
 - It will prompt the H2 console and provide the following params to connect with H2
   - JDBC URL:jdbc:h2:mem:paymentdb
   - User Name: sa 
   - Password: password
 
-#  ### END of the Document ### 
